@@ -1,0 +1,95 @@
+# ============================================================================
+#  Rope-LiveMe  ——  全局组件库（特殊版本）需求清单
+#
+#  目标解释器: CPython 3.12.16 x64 (Windows)
+#    <Python 安装目录>\python.exe
+#  目标硬件  : NVIDIA GeForce RTX 5080 (Blackwell, sm_120)
+#  目标 CUDA : 13.0  (torch 2.12.1+cu130 / cuDNN 9.20 / TensorRT 10.16)
+#
+#  全部版本号都是**本机实测可用**的那一套，不是随手写的最新版：
+#  torch 侧必须是 +cu130 的 Blackwell wheel，TensorRT 必须是 cu13 分支，
+#  onnxruntime 必须是 gpu 包（应用要用 TensorrtExecutionProvider）。
+#
+#  安装（两段式，先 CUDA 索引再 PyPI）：
+#    python -m pip install -r requirements.txt
+#  纯 CPU 机器可去掉 torch 三行，改用 https://download.pytorch.org/whl/cpu
+# ============================================================================
+
+--extra-index-url https://download.pytorch.org/whl/cu130
+
+# ---------------------------------------------------------------------------
+# 1. 深度学习核心（Blackwell / CUDA 13.0，必须带 +cu130 后缀）
+# ---------------------------------------------------------------------------
+torch==2.12.1+cu130
+torchvision==0.27.1+cu130
+torchaudio==2.11.0+cu130
+
+# ---------------------------------------------------------------------------
+# 2. 推理后端
+# ---------------------------------------------------------------------------
+tensorrt==10.16.1.11              # 自动带 tensorrt_cu13 / _libs / _bindings
+onnxruntime-gpu==1.29.0           # 提供 TensorrtExecutionProvider + CUDAExecutionProvider
+onnx==1.22.0                      # EngineBuilder 里 onnx->trt 需要
+
+# ---------------------------------------------------------------------------
+# 3. 图像 / 数值 / 科学计算
+# ---------------------------------------------------------------------------
+opencv-contrib-python==5.0.0.93   # 应用 import cv2，全部用到 contrib 侧扩展
+opencv-python==5.0.0.93
+numpy==2.5.3                      # 2.x API，代码里已确认不含 np.float_/np.int0 等旧别名
+scipy==1.18.1
+scikit-image==0.26.0              # from skimage import transform as trans
+kornia==0.8.3                     # cliplib 用到
+kornia_rs==0.1.14
+pillow==13.0.0                    # PIL.Image / ImageTk
+
+# ---------------------------------------------------------------------------
+# 4. GUI / 系统集成
+# ---------------------------------------------------------------------------
+customtkinter==6.0.0              # 代码用到 CTkButton/CTkCanvas/CTkScrollbar/CTkTabview 等
+darkdetect==0.8.0                 # customtkinter 依赖
+psutil==7.2.2                     # 进程树清理
+pywin32==312                      # win32api / win32con / win32com
+pywin32-ctypes==0.2.3
+pyvirtualcam==0.15.0              # 虚拟摄像头输出
+
+# ---------------------------------------------------------------------------
+# 5. 加密 / 网络 / 文本
+# ---------------------------------------------------------------------------
+pycryptodome==3.23.0              # Crypto.Cipher.AES，license 加密
+cryptography==50.0.0
+requests==2.34.2
+aiohttp==3.14.3
+urllib3==2.7.0
+certifi==2026.10.23
+ftfy==6.3.1                       # cliplib tokenizer
+regex==2026.7.19
+tqdm==4.70.1
+packaging==26.3
+setuptools==81.0.0                # 代码 import pkg_resources
+
+# ---------------------------------------------------------------------------
+# 6. 应用专用（当前全局环境缺失，迁移后必须补装）
+# ---------------------------------------------------------------------------
+simpleobsws==1.4.3                # GUI.py  import simpleobsws
+obs-websocket-py==1.0             # GUI.py  from obswebsocket import obsws, requests
+obsws-python==1.8.1               # extend_cameras.py  from obsws_python import ReqClient
+pyshark==0.6                      # rtmp_sniffer.py  import pyshark（需另装 tshark）
+
+# 6.1 上面四个包的连带依赖（本机当前缺 websocket-client / appdirs，且 websockets 需升到 14+）
+websocket-client>=1.8.0
+websockets>=14.0
+appdirs>=1.4.4
+lxml==6.1.3
+termcolor==3.3.0
+msgpack==1.2.1
+
+# ---------------------------------------------------------------------------
+# 7. 可选（应用源码里没有 import，装上是给 torch_tensorrt 混合后端留路）
+# ---------------------------------------------------------------------------
+# torch_tensorrt==2.12.1+cu130
+# numba==0.67.0
+# onnxsim==0.7.0
+# scikit-learn==1.9.0
+# pytorch-lightning==2.6.5
+# torchmetrics==1.9.0

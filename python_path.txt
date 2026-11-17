@@ -1,0 +1,5 @@
+# 双击启动时使用的 Python 解释器：通过系统环境变量读取，不写死绝对路径
+#   设置方法（只需一次）：setx ROPE_PYTHON "C:\Python312\python.exe"
+#   可选写法： env:ROPE_PYTHON  或  %ROPE_PYTHON%  或  %PYTHON_HOME%\python.exe
+# 要求：CPython 3.10-3.12 x64，且已安装 torch / onnxruntime-gpu / tensorrt / opencv / customtkinter
+env:ROPE_PYTHON

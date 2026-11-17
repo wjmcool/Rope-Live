@@ -1,0 +1,29 @@
+# ---- 模型与推理引擎（体积大，自行下载）----
+models/*
+!models/README.md
+tensorrt-engines/*
+!tensorrt-engines/.gitkeep
+dfl_models/*
+!dfl_models/.gitkeep
+dfl_models_convert/
+
+# ---- 本机状态（含账号密码、显卡信息，禁止入库）----
+config/*.json
+!config/config.example.json
+
+# ---- 运行时产物 ----
+logs/
+*.log
+__pycache__/
+*.py[cod]
+*.so
+
+# ---- 本机状态 ----
+config/data.json
+config/*.bak
+*.tmp
+
+# ---- 系统垃圾 ----
+Thumbs.db
+desktop.ini
+.DS_Store
